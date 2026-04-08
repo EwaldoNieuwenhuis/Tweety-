@@ -70,12 +70,8 @@ class Tweet extends Model
     }
 
     public function getImage(){
-        if($this->image=='https://picsum.photos/500/300'){
-            return 'https://picsum.photos/id/'.$this->id.'/500/300';
-        }else{
-            return "/storage/".$this->image;
-        }
-        
+        if (\Illuminate\Support\Str::startsWith($this->image ?? '', 'http')) return $this->image;
+        return "/storage/".$this->image;
     }
 
     //like the tweet
