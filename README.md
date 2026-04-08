@@ -1,62 +1,79 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Tweety 🐦
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Tweety is a Twitter clone built with **Laravel 8**, **Tailwind CSS**, and **Blade Templates**. It features custom user profiles, functional timelines, a robust follow/unfollow system, and dynamic interactions (likes, dislikes, mentions, and image attachments).
 
-## About Laravel
+## Tech Stack Overview
+- **Backend:** Laravel 8.x (PHP 8.0+)
+- **Database:** SQLite (Default for local development)
+- **Frontend:** Laravel Mix + Tailwind CSS v2
+- **Dummy Data:** Pravatar (Avatars), Lorem Picsum (Banners/Tweets)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Onboarding & Setup Guide
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Welcome to the project! Since this is a legacy Laravel 8 application running a specific Node/Tailwind build pipeline, it is heavily recommended to use **WSL (Windows Subsystem for Linux)** if you are developing on a Windows machine.
 
-## Learning Laravel
+### Prerequisites (WSL/Linux)
+1. PHP 8.0+ (Tested successfully with PHP 8.3 & `php8.3-sqlite3` driver).
+2. Composer (PHP package manager).
+3. **Node v16** *(Crucial for ancient PostCSS & Tailwind v2 compatibility - NVM simplifies this)*.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Step-by-Step Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Clone the repository** and navigate into the directory in your WSL terminal.
+2. **Setup the Environment File**:
+   Copy the example environment variables and generate an application key:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   *Make sure `DB_CONNECTION=sqlite` is set in your `.env`.*
 
-## Laravel Sponsors
+3. **Install Backend Dependencies**:
+   If you have a newer PHP version (like 8.3), you may need to ignore platform requirements since this framework is locked to older Laravel dependencies:
+   ```bash
+   composer install --ignore-platform-reqs
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+4. **Prepare the Database & Dummy Data**:
+   This project relies on SQLite and includes a very thorough `DatabaseSeeder` that populates the application with hundreds of users, tweets, and networking algorithms so you don't start with a blank timeline.
+   ```bash
+   # Make sure the SQLite database exists
+   touch database/database.sqlite
+   
+   # Link the storage directory for avatars
+   php artisan storage:link
+   
+   # Migrate and seed the data!
+   php artisan migrate:fresh --seed
+   ```
 
-### Premium Partners
+5. **Install Frontend Dependencies (Node 16)**:
+   You will encounter `ERR_PACKAGE_PATH_NOT_EXPORTED` errors if you try to compile assets using Node 18 or 20. Please use Node 16.
+   ```bash
+   nvm install 16
+   nvm use 16
+   npm ci
+   npm run dev
+   ```
+   *(We also included a handy `build.sh` script in the root directory that automates the frontend asset pipeline for you!)*
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/)**
-- **[OP.GG](https://op.gg)**
+### Local Development
 
-## Contributing
+To spin up the web server, simply run:
+```bash
+php artisan serve
+```
+You can now access the application at **http://localhost:8000**.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Since you ran the database seeder earlier, you can log in immediately using the predefined test account to view a populated timeline:
+- **Email:** `pinky@example.com`
+- **Password:** `password`
 
-## Code of Conduct
+## Key Features & Architecture
+- **Timeline (`User@timeline`)**: Queries not only the active user's tweets, but merges them logically with the tweets of everyone the user follows.
+- **Dynamic Images**: Models (`Tweet.php`, `User.php`) are configured to seamlessly serve both relative `/storage` images as well as absolute URLs (`https://`) seamlessly—allowing our factories to populate realistic scraped UI data.
+- **Mentions (`Tweet@bodyWithMentions`)**: A custom parser algorithm converts raw `@username` tags into clickable profile anchor tags prior to rendering.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Happy coding!
