@@ -26,7 +26,7 @@ class TweetFactory extends Factory
         return [
             'user_id' => User::factory(),
             'body' => $this->faker->sentence,
-            'image' => 'https://picsum.photos/500/300'
+            'image' => $this->faker->boolean(20) ? 'https://picsum.photos/seed/' . $this->faker->word . '/500/300' : null,
         ];
     }
 }

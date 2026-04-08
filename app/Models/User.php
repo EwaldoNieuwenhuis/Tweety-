@@ -63,12 +63,12 @@ class User extends Authenticatable
     }
 
     public function getAvatar(){
-
+        if (\Illuminate\Support\Str::startsWith($this->avatar ?? '', 'http')) return $this->avatar;
         return "/storage/".$this->avatar;
     }
 
     public function getBanner(){
-
+        if (\Illuminate\Support\Str::startsWith($this->banner ?? '', 'http')) return $this->banner;
         return "/storage/".$this->banner;
     }
 
